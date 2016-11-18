@@ -16,7 +16,6 @@ s.requires_arc = true
 s.source       = { :git => 'https://github.com/devdawei/DVVAlertView.git', :tag => s.version.to_s }
 
 s.source_files = 'DVVAlertView/DVVAlertView/*.{h, m}'
-s.public_header_files = 'DVVAlertView/DVVAlertView/*.{h}'
 
 s.frameworks = 'Foundation', 'UIKit'
 
