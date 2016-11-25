@@ -90,7 +90,6 @@
                     break;
                     
                 default:
-                    [alertController addTextFieldWithConfigurationHandler:nil];
                     break;
             }
             
