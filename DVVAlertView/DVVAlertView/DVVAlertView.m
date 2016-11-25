@@ -116,11 +116,14 @@
     {
         dispatch_async(dispatch_get_main_queue(), ^{
             __block DVVAlertView *dvvAlert = [self new];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored"-Wdeprecated-declarations"
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                                 message:message
                                                                delegate:nil
                                                       cancelButtonTitle:nil
                                                       otherButtonTitles:nil];
+#pragma clang diagnostic pop
             switch (style) {
                 case DVVAlertViewStylePlainTextInput:
                     [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
@@ -166,10 +169,13 @@
 
 #pragma mark - UIAlertViewDelegate
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored"-Wdeprecated-declarations"
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (_completion) _completion(buttonIndex);
 }
+#pragma clang diagnostic pop
 
 #pragma mark - 获取顶层控制器
 

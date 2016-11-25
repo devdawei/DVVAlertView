@@ -6,7 +6,7 @@ DVVAlertView
 -------
 在`Podfile`里添加此行内容：
 ```
-pod 'DVVAlertView', :git => 'https://github.com/devdawei/DVVAlertView.git', :tag => 'v1.0.3'
+pod 'DVVAlertView', :git => 'https://github.com/devdawei/DVVAlertView.git', :tag => 'v1.0.4'
 ```
 
 然后在`Terminal`中`cd`到工程目录，执行如下命令：
