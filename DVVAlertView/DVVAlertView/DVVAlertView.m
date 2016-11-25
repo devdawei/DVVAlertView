@@ -10,48 +10,89 @@
 
 @interface DVVAlertView () <UIAlertViewDelegate>
 
-@property (nonatomic, copy) DVVAlertViewCompletion completion;
+@property (nonatomic, copy) void (^completion)(NSUInteger idx);
 
 @end
 
 @implementation DVVAlertView
 
-#pragma mark - Init
++ (void)showAlertWithTitle:(NSString *)title
+                   message:(NSString *)message
+              buttonTitles:(NSArray<NSString *> *)buttonTitles
+                completion:(void (^)(NSUInteger idx))completion
+{
+    [DVVAlertView showAlertFrom:nil
+                          title:title
+                        message:message
+                   buttonTitles:buttonTitles
+                          style:DVVAlertViewStyleDefault
+                     completion:^(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj) {
+                               completion(idx);
+                           }];
+}
 
 + (void)showAlertWithTitle:(NSString *)title
                    message:(NSString *)message
               buttonTitles:(NSArray<NSString *> *)buttonTitles
-                completion:(DVVAlertViewCompletion)completion
+                     style:(DVVAlertViewStyle)style
+                completion:(void (^)(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj))completion
 {
-    [self showAlertFrom:nil
-                  title:title
-                message:message
-           buttonTitles:buttonTitles
-             completion:completion];
+    [DVVAlertView showAlertFrom:nil
+                          title:title
+                        message:message
+                   buttonTitles:buttonTitles
+                          style:style
+                     completion:completion];
 }
 
 + (void)showAlertFrom:(UIViewController *)controller
                 title:(NSString *)title
               message:(NSString *)message
          buttonTitles:(NSArray<NSString *> *)buttonTitles
-           completion:(DVVAlertViewCompletion)completion
+                style:(DVVAlertViewStyle)style
+           completion:(void (^)(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj))completion
 {
     if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            __block UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                                             message:message
-                                                                                      preferredStyle:UIAlertControllerStyleAlert];
+            __block UIAlertController *alertController = nil;
+            alertController = [UIAlertController alertControllerWithTitle:title
+                                                                  message:message
+                                                           preferredStyle:UIAlertControllerStyleAlert];
             
             void (^alertActionHandler)(UIAlertAction *) = [^(UIAlertAction *action) {
                 // This block intentionally retains alertController, and releases it afterwards.
                 NSUInteger index = [alertController.actions indexOfObject:action];
                 if (completion)
                 {
-                    completion(index);
+                    completion(index, alertController.textFields, DVVAlertViewTypeUIAlertController, alertController);
                 }
                 alertController = nil;
             } copy];
+            
+            switch (style) {
+                case DVVAlertViewStylePlainTextInput:
+                    [alertController addTextFieldWithConfigurationHandler:nil];
+                    break;
+                case DVVAlertViewStyleSecureTextInput:
+                    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                        textField.secureTextEntry = YES;
+                    }];
+                    break;
+                case DVVAlertViewStyleLoginAndPasswordInput:
+                    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                        textField.placeholder = @"Login";
+                    }];
+                    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+                        textField.secureTextEntry = YES;
+                        textField.placeholder = @"Password";
+                    }];
+                    break;
+                    
+                default:
+                    [alertController addTextFieldWithConfigurationHandler:nil];
+                    break;
+            }
             
             for (NSString *buttonTitle in buttonTitles)
             {
@@ -60,42 +101,65 @@
                                                                   handler:alertActionHandler]];
             }
             
-            UIViewController *controller = nil;
+            UIViewController *vc = nil;
             if (controller)
             {
-                controller = controller;
+                vc = controller;
             }
             else
             {
-                controller = [DVVAlertView topController];
+                vc = [DVVAlertView topController];
             }
-            [controller presentViewController:alertController animated:YES completion:nil];
+            [vc presentViewController:alertController animated:YES completion:nil];
         });
     }
     else
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            __block DVVAlertView *dvvAlertView = [self new];
+            __block DVVAlertView *dvvAlert = [self new];
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                                 message:message
                                                                delegate:nil
                                                       cancelButtonTitle:nil
                                                       otherButtonTitles:nil];
-            
+            switch (style) {
+                case DVVAlertViewStylePlainTextInput:
+                    [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
+                    break;
+                case DVVAlertViewStyleSecureTextInput:
+                    [alertView setAlertViewStyle:UIAlertViewStyleSecureTextInput];
+                    break;
+                case DVVAlertViewStyleLoginAndPasswordInput:
+                    [alertView setAlertViewStyle:UIAlertViewStyleLoginAndPasswordInput];
+                    break;
+                    
+                default:
+                    [alertView setAlertViewStyle:UIAlertViewStyleDefault];
+                    break;
+            }
             for (NSString *buttonTitle in buttonTitles)
             {
                 [alertView addButtonWithTitle:buttonTitle];
             }
             
-            dvvAlertView.completion = ^(NSUInteger index) {
-                if (completion) {
-                    completion(index);
+            dvvAlert.completion = ^(NSUInteger index) {
+                if (completion)
+                {
+                    NSMutableArray<UITextField *> *array = [NSMutableArray array];
+                    if (DVVAlertViewStyleDefault != style)
+                    {
+                        for (NSUInteger i = 0; i < 2; i++)
+                        {
+                            if ([alertView textFieldAtIndex:i]) [array addObject:[alertView textFieldAtIndex:i]];
+                        }
+                    }
+                    completion(index, array, DVVAlertViewTypeUIAlertView, alertView);
                 }
                 
-                dvvAlertView = nil;
+                dvvAlert = nil;
             };
             
-            alertView.delegate = dvvAlertView;
+            alertView.delegate = dvvAlert;
             [alertView show];
         });
     }

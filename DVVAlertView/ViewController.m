@@ -33,14 +33,19 @@
                           }];
     
 //    /* NO.2 */
-//    [DVVAlertView showAlertFrom:self
-//                          title:@"标题"
-//                        message:@"这是提示信息"
-//                   buttonTitles:@[ @"取消", @"确定" ]
-//                     completion:^(NSUInteger idx) {
-//                         
-//                         NSLog(@"%zi", idx);
-//                     }];
+//    [DVVAlertView showAlertWithTitle:@"标题"
+//                             message:@"这是提示信息"
+//                        buttonTitles:@[ @"取消", @"确定" ]
+//                               style:DVVAlertViewStylePlainTextInput
+//                          completion:^(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj) {
+//                              
+//                              NSLog(@"idx: %zi", idx);
+//                              NSLog(@"type: %zi", type);
+//                              NSLog(@"textFields.count: %zi", textFields.count);
+//                              if (1 == textFields.count) NSLog(@"textFields[0].text: %@", textFields[0].text);
+//                              if (2 == textFields.count) NSLog(@"textFields[1].text: %@", textFields[1].text);
+//                              NSLog(@"%@", obj);
+//                          }];
 }
 
 - (void)didReceiveMemoryWarning
