@@ -52,7 +52,22 @@ typedef NS_ENUM(NSUInteger, DVVAlertViewType) {
                 completion:(void (^)(NSUInteger idx))completion;
 
 /**
- 显示带输入框的Alert
+ 显示Alert（可指定控制器）
+ 
+ @param controller 从这个控制器显示
+ @param title 标题
+ @param message 提示信息
+ @param buttonTitles 按钮显示文字（例如：@[ @"取消", @"确定" ] 或者 @[ @"打酱油滴", @"确定", @[取消] ] ）
+ @param completion 点击回调Block
+ */
++ (void)showAlertFrom:(UIViewController *)controller
+                title:(NSString *)title
+              message:(NSString *)message
+         buttonTitles:(NSArray<NSString *> *)buttonTitles
+           completion:(void (^)(NSUInteger idx))completion;
+
+/**
+ 显示Alert（可选择不同的样式）
  
  @param title 标题
  @param message 提示信息
@@ -65,5 +80,22 @@ typedef NS_ENUM(NSUInteger, DVVAlertViewType) {
               buttonTitles:(NSArray<NSString *> *)buttonTitles
                      style:(DVVAlertViewStyle)style
                 completion:(void (^)(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj))completion;
+
+/**
+ 显示Alert（可选择不同的样式，指定控制器）
+ 
+ @param controller 从这个控制器显示
+ @param title 标题
+ @param message 提示信息
+ @param buttonTitles 按钮显示文字（例如：@[ @"取消", @"确定" ]）
+ @param style 样式
+ @param completion 点击回调Block
+ */
++ (void)showAlertFrom:(UIViewController *)controller
+                title:(NSString *)title
+              message:(NSString *)message
+         buttonTitles:(NSArray<NSString *> *)buttonTitles
+                style:(DVVAlertViewStyle)style
+           completion:(void (^)(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj))completion;
 
 @end

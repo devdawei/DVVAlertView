@@ -25,10 +25,23 @@
                           title:title
                         message:message
                    buttonTitles:buttonTitles
+                     completion:completion];
+}
+
++ (void)showAlertFrom:(UIViewController *)controller
+                title:(NSString *)title
+              message:(NSString *)message
+         buttonTitles:(NSArray<NSString *> *)buttonTitles
+           completion:(void (^)(NSUInteger idx))completion {
+    
+    [DVVAlertView showAlertFrom:controller
+                          title:title
+                        message:message
+                   buttonTitles:buttonTitles
                           style:DVVAlertViewStyleDefault
                      completion:^(NSUInteger idx, NSArray<UITextField *> *textFields, DVVAlertViewType type, id obj) {
-                               completion(idx);
-                           }];
+                         completion(idx);
+                     }];
 }
 
 + (void)showAlertWithTitle:(NSString *)title
